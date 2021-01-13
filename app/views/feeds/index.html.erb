@@ -1,0 +1,55 @@
+<% if @feed_items.empty? %>
+  <p>Whoops, nothing here to show. Ether the reader broke or you just don't have any subscriptions at all.</p>
+<% else %>
+  <% last = nil %>
+  <% @feed_items.each do |item| %>
+    <% if last.nil? || last.feed_id != item.feed_id %> 
+      <p class="feed_title"><%= item.feed_title %></p>
+    <% end %>
+    <div class="feed_item_container"><div class="feed_item">
+      <a href="<%= begin URI.join(item.feed_url, item.url) rescue item.url end %>">
+        <p style="font-size: 130%"><%= item.title %></p>
+      </a>
+      <% case item.feedjira_class %>
+      <% when "Feedjira::Parser::AtomYoutubeEntry" %>
+        <iframe width="640" height="390" src="https://www.youtube-nocookie.com/embed/<%= item.feedjira_entry["youtube_video_id"] %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <% else %>
+        <% case item.feedjira_class %>
+        <% when "Feedjira::Parser::ITunesRSSItem" %>
+          <% if item.feedjira_entry %>
+            <p>
+              <audio controls preload="metadata" style="width: 100%">
+                <source src="<%= item.feedjira_entry["enclosure_url"] %>" type="<%= item.feedjira_entry["enclosure_type"] %>">
+                <!--Your browser does not support the audio element.-->
+              </audio>
+            </p>
+            <% if item.feedjira_entry["itunes_image"] %>
+              <p><img src="<%= item.feedjira_entry["itunes_image"] %>" alt="" /></p>
+            <% end %>
+          <% end %>
+        <% end %>
+        <% if item.feedjira_entry.nil? %>
+          <p style="font-size: 60%"><i>no entry available: feed item is too old</i></p>
+        <% else %>
+          <% content = item.feedjira_entry["content"] || item.feedjira_entry["summary"] || item.feedjira_entry["itunes_summary"] %>
+          <% if content %>
+            <div class="feed_item_content">
+              <%= sanitize content %>
+            </div>
+          <% else %>
+              <p style="font-size: 60%"><i>no summary or content available</i></p>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div></div>
+    <!--<hr />-->
+    <% last = item %>
+  <% end %>
+  <% if @next %>
+    <p class="pagination">
+      <%= link_to controller: :feeds, action: :index, before: "#{[last.custom_date, last.created_at].compact.first.to_f}_#{last.remote_created_at.to_f}_#{last.id}" do %>
+        before <%= [last.custom_date, last.created_at].compact.first.to_s %> →
+      <% end %>
+    </p>
+  <% end %>
+<% end %>

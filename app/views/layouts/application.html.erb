@@ -1,15 +1,97 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Reader</title>
+    <% if @current_user %>
+      <title>This is your reader, <%= @current_user.json.try("[]", "username") || @current_user.id %></title>
+    <% else %>
+      <title>A web reader for @rss2tg_bot</title>
+    <% end %>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag 'application', media: 'all' %>
+    <style>
+      .feed_item img {
+        max-width: 100%;
+        max-height: 100vh;
+        width: auto;
+        height: auto;
+      }
+      body {
+        margin: 0;
+        font-size: 120%;
+        line-height: 150%;
+        font-family: "PT Serif", Georgia, Times, "Times New Roman", serif;
+        background-color: black;
+        color: white;
+      }
+      div.content {
+        /*max-width: 43em;*/
+        /*max-width: 50em;*/
+        max-width: 50em;
+        margin: 0 auto;
+        /*padding-left:  0.4em;
+        padding-right: 0.4em;*/
+        overflow-wrap: break-word;
+      }
+      div.feed_item_container { /* the white box */
+        padding-top:    0.8em;
+        padding-bottom: 1.5em;
+        margin-bottom: 0.8em;
+        border-radius: 0.6em;
+        background-color: white;
+        color: black;
+      }
+      div.feed_item_container a {
+        /*color: black;*/
+      }
+      div.feed_item {
+        max-width: 43em;
+        margin: 0 auto;
+        /*padding-left:  4em;
+        padding-right: 4em;*/
+      }
+      p.feed_title {
+        font-size: 130%;
+        color: white;
+      }
+      a:hover {
+        color: #CC0000;
+      }
+      p.pagination a {
+        color: white;
+      }
+      p.pagination a:hover {
+        color: #d1d1d1;
+      }
+      @media (max-width: 767px) {
+        body {
+          font-size: 100%;
+        }
+        div.feed_item_container {
+          border-radius: 0;
+        }
+      }
+      /* pt-serif-regular - latin-ext_latin_cyrillic-ext_cyrillic */
+      @font-face {
+        font-family: 'PT Serif';
+        font-style: normal;
+        font-weight: 400;
+        src: url('/fonts/pt-serif-v12-latin-ext_latin_cyrillic-ext_cyrillic-regular.eot'); /* IE9 Compat Modes */
+        src: local(''),
+             url('/fonts/pt-serif-v12-latin-ext_latin_cyrillic-ext_cyrillic-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+             url('/fonts/pt-serif-v12-latin-ext_latin_cyrillic-ext_cyrillic-regular.woff2') format('woff2'), /* Super Modern Browsers */
+             url('/fonts/pt-serif-v12-latin-ext_latin_cyrillic-ext_cyrillic-regular.woff') format('woff'), /* Modern Browsers */
+             url('/fonts/pt-serif-v12-latin-ext_latin_cyrillic-ext_cyrillic-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+             url('/fonts/pt-serif-v12-latin-ext_latin_cyrillic-ext_cyrillic-regular.svg#PTSerif') format('svg'); /* Legacy iOS */
+      }
+    </style>
   </head>
 
   <body>
-    <%= yield %>
+    <div class="content">
+      <%= yield %>
+    </div>
   </body>
 </html>
