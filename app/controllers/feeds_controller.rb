@@ -1,6 +1,6 @@
 class FeedsController < ApplicationController
   def index
-    per_page = 40
+    per_page = 30
     @feed_items = FeedItem.where(
       sheets: { telegram_chat_id: current_user.id }
     ).where(
