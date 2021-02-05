@@ -1,3 +1,4 @@
+<% allowed_attributes = Rails::Html::SafeListSanitizer.allowed_attributes - ["class"] %>
 <% if @feed_items.empty? %>
   <p>Whoops, nothing here to show. Ether the reader broke or you just don't have any subscriptions at all.</p>
 <% else %>
@@ -34,7 +35,7 @@
           <% content = item.feedjira_entry["content"] || item.feedjira_entry["summary"] || item.feedjira_entry["itunes_summary"] %>
           <% if content %>
             <div class="feed_item_content">
-              <%= sanitize content %>
+              <%= sanitize content, attributes: allowed_attributes %>
             </div>
           <% else %>
               <p style="font-size: 60%"><i>no summary or content available</i></p>
