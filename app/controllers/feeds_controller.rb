@@ -11,10 +11,6 @@ class FeedsController < ApplicationController
       :sheets,
       :feed
     ).order(
-      #"sheets.feed_item_created_at": :desc,
-      #"sheets.feed_item_remote_created_at": :desc,
-      #"sheets.feed_item_id": :desc
-
       # and this is how you do it in ActiveRecord 6!
       Arel.sql %{
       COALESCE(sheets.feed_item_custom_date, sheets.feed_item_created_at) DESC,
@@ -32,23 +28,18 @@ class FeedsController < ApplicationController
       feed_items.created_at,
       remote_created_at,
       custom_date,
+      extract(epoch from COALESCE(sheets.feed_item_custom_date, sheets.feed_item_created_at)) AS first_order_num,
+      extract(epoch from sheets.feed_item_remote_created_at) AS second_order_num,
       feedjira_entry,
       feed_items.feedjira_class,
       feedjira_version
     }).limit(per_page + 1)
     if params[:before].present?
-      created_at, remote_created_at, id = params[:before].split('_')
-      created_at = Time.at(created_at.to_f)
-      if remote_created_at.blank?
-        remote_created_at = nil
-      else
-        remote_created_at = Time.at(remote_created_at.to_f)
-      end
-      id = id.to_i
+      first, second, id = params[:before].split('_').map{|x|x.try(:to_i)}
       @feed_items = @feed_items.where(
-        #"(sheets.feed_item_created_at, sheets.feed_item_remote_created_at, sheets.feed_item_id) < (?, ?, ?)",
-        "(COALESCE(sheets.feed_item_custom_date, sheets.feed_item_created_at), sheets.feed_item_remote_created_at, sheets.feed_item_id) < (?, ?, ?)",
-        created_at, remote_created_at, id)
+        "(COALESCE(sheets.feed_item_custom_date, sheets.feed_item_created_at), sheets.feed_item_remote_created_at, sheets.feed_item_id) < (to_timestamp(?), to_timestamp(?), ?)",
+        first, second, id
+      )
     end
     @feed_items = @feed_items.to_a
     @next = @feed_items[per_page]
