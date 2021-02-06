@@ -50,7 +50,7 @@
   <% end %>
   <% if @next %>
     <p class="pagination">
-      <%= link_to controller: :feeds, action: :index, before: "#{last.first_order_num.to_i}_#{last.second_order_num.try(:to_i)}_#{last.id}" do %>
+      <%= link_to controller: :feeds, action: :index, before: "#{last.first_order_num.to_f}_#{last.second_order_num.try(:to_f)}_#{last.id}" do %>
         before <%= [last.custom_date, last.created_at].compact.first.to_s %> →
       <% end %>
     </p>

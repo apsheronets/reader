@@ -35,10 +35,10 @@ class FeedsController < ApplicationController
       feedjira_version
     }).limit(per_page + 1)
     if params[:before].present?
-      first, second, id = params[:before].split('_').map{|x|x.try(:to_i)}
+      first, second, id = params[:before].split('_')
       @feed_items = @feed_items.where(
         "(COALESCE(sheets.feed_item_custom_date, sheets.feed_item_created_at), sheets.feed_item_remote_created_at, sheets.feed_item_id) < (to_timestamp(?), to_timestamp(?), ?)",
-        first, second, id
+        first.to_f, second.to_f, id.to_i
       )
     end
     @feed_items = @feed_items.to_a
