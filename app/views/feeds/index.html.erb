@@ -13,7 +13,9 @@
       </a>
       <% case item.feedjira_class %>
       <% when "Feedjira::Parser::AtomYoutubeEntry" %>
-        <iframe width="640" height="390" src="https://www.youtube-nocookie.com/embed/<%= item.feedjira_entry["youtube_video_id"] %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="video_wrapper">
+          <iframe width="560" height="349" src="https://www.youtube-nocookie.com/embed/<%= item.feedjira_entry["youtube_video_id"] %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
       <% else %>
         <% case item.feedjira_class %>
         <% when "Feedjira::Parser::ITunesRSSItem" %>
