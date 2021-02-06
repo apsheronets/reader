@@ -1,16 +1,15 @@
 class FeedsController < ApplicationController
   def index
     per_page = 30
-    @feed_items = Sheet.where(
-      telegram_chat_id: current_user.id
+    @feed_items = FeedItem.where(
+      sheets: { telegram_chat_id: current_user.id }
     ).where(
       # Since we have no foreign key sheet→telegram_subscription with ON DELETE CASCADE,
       # we have to filter all the sheets manually.
       "sheets.feed_id IN (SELECT feed_id FROM telegram_subscriptions WHERE telegram_chat_id = ?)", current_user.id
     ).joins(
-      "INNER JOIN feed_items ON sheets.feed_item_id = feed_items.id"
-    ).joins(
-      "INNER JOIN feeds ON feeds.id = feed_items.feed_id"
+      :sheets,
+      :feed
     ).order(
       # and this is how you do it in ActiveRecord 6!
       Arel.sql %{
