@@ -41,7 +41,13 @@ class FeedsController < ApplicationController
         first.to_f, second.to_f, id.to_i
       )
     end
-    @feed_items = @feed_items.to_a
+    ActiveRecord::Base.transaction do
+      ActiveRecord::Base.connection.execute "SET enable_seqscan    = off;"
+      ActiveRecord::Base.connection.execute "SET enable_bitmapscan = off;"
+      ActiveRecord::Base.connection.execute "SET enable_hashjoin   = off"
+      ActiveRecord::Base.connection.execute "SET enable_mergejoin  = off"
+      @feed_items = @feed_items.to_a
+    end
     @next = @feed_items[per_page]
     @first = @feed_items.first
     @feed_items = @feed_items.first(per_page)
