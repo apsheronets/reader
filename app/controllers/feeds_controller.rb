@@ -16,23 +16,12 @@ class FeedsController < ApplicationController
       COALESCE(sheets.feed_item_custom_date, sheets.feed_item_created_at) DESC,
       sheets.feed_item_remote_created_at DESC,
       sheets.feed_item_id DESC }
-    ).where(
-      "feedjira_entry IS NOT NULL"
     ).select(%{
-      feed_items.id,
-      feed_items.feed_id,
-      feed_items.title,
-      feed_items.url,
+      feed_items.*,
       feeds.title AS feed_title,
       feeds.url AS feed_url,
-      feed_items.created_at,
-      remote_created_at,
-      custom_date,
       extract(epoch from COALESCE(sheets.feed_item_custom_date, sheets.feed_item_created_at)) AS first_order_num,
-      extract(epoch from sheets.feed_item_remote_created_at) AS second_order_num,
-      feedjira_entry,
-      feed_items.feedjira_class,
-      feedjira_version
+      extract(epoch from sheets.feed_item_remote_created_at) AS second_order_num
     }).limit(per_page + 1)
     if params[:before].present?
       first, second, id = params[:before].split('_')

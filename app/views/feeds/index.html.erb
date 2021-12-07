@@ -14,36 +14,30 @@
       <% case item.feedjira_class %>
       <% when "Feedjira::Parser::AtomYoutubeEntry" %>
         <div class="video_wrapper">
-          <iframe width="560" height="349" src="https://www.youtube-nocookie.com/embed/<%= item.feedjira_entry["youtube_video_id"] %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <iframe width="560" height="349" src="https://www.youtube-nocookie.com/embed/<%= item.youtube_video_id %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
       <% else %>
         <% case item.feedjira_class %>
         <% when "Feedjira::Parser::ITunesRSSItem" %>
-          <% if item.feedjira_entry %>
-            <% if item.feedjira_entry["enclosure_url"].present? %>
-              <p>
-                <audio controls preload="metadata" style="width: 100%">
-                  <source src="<%= item.feedjira_entry["enclosure_url"] %>" type="<%= item.feedjira_entry["enclosure_type"] %>">
-                  <!--Your browser does not support the audio element.-->
-                </audio>
-              </p>
-            <% end %>
-            <% if item.feedjira_entry["itunes_image"] %>
-              <p><img src="<%= item.feedjira_entry["itunes_image"] %>" alt="" /></p>
-            <% end %>
+          <% if item.itunes_enclosure_url.present? %>
+            <p>
+              <audio controls preload="metadata" style="width: 100%">
+                <source src="<%= item.itunes_enclosure_url %>" type="<%= item.itunes_enclosure_type %>">
+                <!--Your browser does not support the audio element.-->
+              </audio>
+            </p>
+          <% end %>
+          <% if item.itunes_image %>
+            <p><img src="<%= item.itunes_image %>" alt="" /></p>
           <% end %>
         <% end %>
-        <% if item.feedjira_entry.nil? %>
-          <p style="font-size: 60%"><i>no entry available: feed item is too old</i></p>
+        <% content = item.content || item.summary || item.itunes_summary %>
+        <% if content.present? %>
+          <div class="feed_item_content">
+            <%= sanitize content, attributes: allowed_attributes %>
+          </div>
         <% else %>
-          <% content = item.feedjira_entry["content"] || item.feedjira_entry["summary"] || item.feedjira_entry["itunes_summary"] %>
-          <% if content %>
-            <div class="feed_item_content">
-              <%= sanitize content, attributes: allowed_attributes %>
-            </div>
-          <% else %>
-              <p style="font-size: 60%"><i>no summary or content available</i></p>
-          <% end %>
+            <p style="font-size: 60%"><i>no summary or content available</i></p>
         <% end %>
       <% end %>
     </div></div>
